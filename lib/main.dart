@@ -294,7 +294,7 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
     }
 
     // --- Mock API Call ---
-    const String apiUrl = 'https://nextjst-test.vercel.app/api/transfer'; // Replace with your Next.js API URL
+    const String apiUrl = 'https://nextjst-test.vercel.app/api/receive'; // Replace with your Next.js API URL
 
     try {
       final response = await http.post(
