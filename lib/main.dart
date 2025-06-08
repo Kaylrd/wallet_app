@@ -13,8 +13,61 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'FinTech Wallet',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.deepPurple, // A nice financial-looking purple
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+          primary: Colors.deepPurple,
+          secondary: Colors.amberAccent, // A complementary accent color
+          surface: Colors.white,
+          onSurface: Colors.black87,
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.deepPurple,
+          foregroundColor: Colors.white, // Text and icon color on app bar
+          elevation: 0, // Flat app bar
+          centerTitle: true,
+          titleTextStyle: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.deepPurple, // Button background
+            foregroundColor: Colors.white, // Button text/icon color
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10), // Rounded corners
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+            textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: const BorderSide(color: Colors.grey),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Colors.grey.shade400),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: const BorderSide(color: Colors.deepPurple, width: 2),
+          ),
+          labelStyle: TextStyle(color: Colors.grey.shade600),
+          hintStyle: TextStyle(color: Colors.grey.shade400),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        ),
+        // Add more theme properties as needed (e.g., textTheme, cardTheme)
+        cardTheme: CardTheme(
+          elevation: 5,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          margin: const EdgeInsets.all(0), // Reset margin for custom padding
+        ),
       ),
       home: const WalletScreen(),
     );
@@ -29,9 +82,10 @@ class WalletScreen extends StatefulWidget {
 }
 
 class _WalletScreenState extends State<WalletScreen> {
-  double _walletBalance = 12250.75; // Initial mock balance
+  double _walletBalance = 1250.75;
+  final String _userName = 'John Doe';
 
-  // Function to update the balance
+
   void _updateWalletBalance(double newBalance) {
     setState(() {
       _walletBalance = newBalance;
@@ -44,30 +98,67 @@ class _WalletScreenState extends State<WalletScreen> {
       appBar: AppBar(
         title: const Text('My Wallet'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_none),
+            onPressed: () {
+              // Handle notifications
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('No new notifications')),
+              );
+            },
+          ),
+        ],
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Current Balance',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Hello, $_userName!',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
-              const SizedBox(height: 10),
-              Text(
-                '₦${_walletBalance.toStringAsFixed(2)}', // Displaying with Naira symbol
-                style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 25),
+            Card( // Using the Card widget for a nice container
+              // Margin is set in ThemeData, but we can override if needed
+              child: Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: Column(
+                  children: [
+                    Text(
+                      'Current Balance',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey.shade600,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      '₦${_walletBalance.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        fontSize: 48,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepPurple, // Use primary color for emphasis
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 50),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton.icon(
+            ),
+            const SizedBox(height: 50),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Expanded( // Use Expanded to make buttons take equal space
+                  child: ElevatedButton.icon(
                     onPressed: () async {
-                      // Pass the callback to TransferScreen
-                      final result = await Navigator.push(
+                      await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => TransferScreen(
@@ -77,19 +168,15 @@ class _WalletScreenState extends State<WalletScreen> {
                           ),
                         ),
                       );
-                      // Optionally, if the TransferScreen doesn't return anything
-                      // but calls the callback, you might not need 'result'.
                     },
-                    icon: const Icon(Icons.send),
+                    icon: const Icon(Icons.send_rounded), // Slightly different icon
                     label: const Text('Send Money'),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
-                      textStyle: const TextStyle(fontSize: 16),
-                    ),
                   ),
-                  ElevatedButton.icon(
+                ),
+                const SizedBox(width: 20), // Spacing between buttons
+                Expanded(
+                  child: ElevatedButton.icon(
                     onPressed: () async {
-                      // Pass the callback to ReceiveScreen
                       await Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -101,17 +188,33 @@ class _WalletScreenState extends State<WalletScreen> {
                         ),
                       );
                     },
-                    icon: const Icon(Icons.qr_code),
+                    icon: const Icon(Icons.download_rounded), // More intuitive icon
                     label: const Text('Receive Cash'),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
-                      textStyle: const TextStyle(fontSize: 16),
-                    ),
                   ),
-                ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 40),
+            // Placeholder for recent transactions - future feature
+            const Text(
+              'Recent Transactions',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 15),
+            Expanded(
+              child: Center(
+                child: Text(
+                  'No transactions yet. Send or receive money to get started!',
+                  style: TextStyle(color: Colors.grey.shade600),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
