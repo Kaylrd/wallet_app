@@ -278,15 +278,31 @@ class _TransferScreenState extends State<TransferScreen> {
             // Optionally, update wallet balance on WalletScreen after successful transfer
             // This would typically involve a callback or state management solution
           });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Transfer successful! Transaction ID: ${responseData['transactionId']}'),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 3),
+            ),
+          );
           _recipientController.clear();
           _amountController.clear();
           if (widget.onTransferSuccess != null && responseData['newSenderBalance'] != null) {
             widget.onTransferSuccess!(responseData['newSenderBalance']);
           }
+          Navigator.pop(context);
         } else {
           setState(() {
             _message = 'Transfer failed: ${responseData['message']}';
           });
+          String errorMessage = responseData['message'] ?? 'Unknown error';
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Transfer failed: $errorMessage'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 5),
+            ),
+          );
         }
       } else {
         setState(() {
